@@ -1,0 +1,16 @@
+# 解決方法
+
+1. routes.rb に
+get 'homes/top'
+root to: 'homes#top'
+を追記すれば良い．
+適宜 $ rails routes で確認
+
+2. LoadError は，クラス名に問題あり．
+homes_controllerのクラス名を修正．
+
+3. startのリンクの記述が不足
+homes/top.html.erb の link_to に books_path を追記．
+
+
+
