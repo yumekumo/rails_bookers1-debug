@@ -12,5 +12,46 @@ homes_controllerのクラス名を修正．
 3. startのリンクの記述が不足
 homes/top.html.erb の link_to に books_path を追記．
 
+4. NameError undefined local variable or method `book'
+render先のbookが未定義．部分テンプレートの書き方に則って
+index.html.erb の render に book: @book を追記．
+
+5. ActiveModel::UnknownAttributeError in BooksController#create
+unknown attribute 'title' for Book.
+とあるため，まず schema.rb を確認．
+titleが存在しないため，
+$ rails g migration AddTitleToBooks title:string
+$ rails db:migrate
+を実行し，カラムの追加を行う．
+参考URL:https://web-camp.online/lesson/curriculums/212/contents/1434
+
+6. 空白で投稿するとエラーが出る
+undefined method `each' for nil:NilClass
+eachはメソッドであるため，その前の @books に問題あり → controller を確認．
+books_controller.rb のcreateアクションを参照
+データが空白の場合そのまま render でindexのビューを読み込んでいる．
+その際に，@booksが定義されていないのでエラーが発生．
+createアクションでは @books が使われていないため，else の後に
+@books = Book.all を追加．(indexアクションと同じ記述)
+
+7. ActionController::UrlGenerationError in Books#index
+投稿してからindexページを表示させると
+No route matches {:action=>"edit", :controller=>"books"}, missing required keys: [:id]
+と表示．
+index.html.erb の Edit の link_to で，パスが edit_book_path になっている．
+id を渡さないといけないため，dit_book_path(book.id) と修正 (.id は無くても可)
+
+8. 編集フォームのupdateボタンが発火しない
+edit.html.erb に<form>タグが存在してる．(form_withが書いてくれるのでいらない)
+その部分を消去．
+
+9. ArgumentError in BooksController#update
+編集フォームからアップデートすると
+wrong number of arguments (given 0, expected 1)
+が表示される．
+updateメソッドでは，@book.update(...) と引数が必要．
+(更新するデータが必要なため)
+今回はストロングパラメータで定義した
+book_params を用いれば良い．
 
 
